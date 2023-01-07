@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(example-project VERSION 0.0.1 LANGUAGES CXX)
+project(ld52 VERSION 0.0.1 LANGUAGES CXX)
 
 if(CMAKE_CXX_COMPILER MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$")
   message(" * C++ compiler: Emscripten")
@@ -45,11 +45,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGL_SILENCE_DEPRECATION")
 
 # add all source files
+set(SOURCE ${SOURCE} src/tweaker.cpp)
+set(SOURCE ${SOURCE} src/renderer.cpp)
 set(SOURCE ${SOURCE} src/main.cpp)
 
+add_executable(${PROJECT_NAME} ${SOURCE})
+
 # add game includes
-include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gitman_sources/g.h/inc)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/gitman_sources/g.h/inc)
 
 add_subdirectory(gitman_sources/g.h)
 
@@ -60,8 +64,6 @@ set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
 # find_package(OpenAL REQUIRED)
-
-add_executable(${PROJECT_NAME} ${SOURCE})
 
 target_link_libraries(${PROJECT_NAME} g)
 target_link_libraries(${PROJECT_NAME} glfw)

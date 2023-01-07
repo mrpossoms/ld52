@@ -1,24 +1,37 @@
 #include "g.h"
 #include "state.hpp"
+#include "tweaker.hpp"
+#include "renderer.hpp"
+#include "gameplay.hpp"
 
-struct my_game : public g::core
+struct ld52 : public g::core
 {
 
 	g::asset::store assets;
-	game::state state;
+	game::State state;
+	std::shared_ptr<game::Renderer> renderer;
+	std::shared_ptr<game::Tweaker> tweaker;
 
-	my_game() = default;
-	~my_game() = default;
+
+	ld52() = default;
+	~ld52() = default;
 
 	virtual bool initialize()
 	{
+		tweaker = std::make_shared<game::Tweaker>(assets);
+		renderer = std::make_shared<game::Renderer>(assets, tweaker);
+
 		return true;
 	}
 
 	virtual void update(float dt)
 	{
+		game::gameplay::update(state, tweaker, dt);
+
 		glClearColor(0.5, 0.5, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderer->draw(state, dt);
 	}
 
 };
@@ -35,11 +48,11 @@ EM_JS(int, canvas_get_height, (), {
 
 int main (int argc, const char* argv[])
 {
-	my_game game;
+	ld52 game;
 
 	g::core::opts opts;
 
-	opts.name = "my game";
+	opts.name = "ld52";
 	opts.gfx.fullscreen = false;
 
 #ifdef __EMSCRIPTEN__
