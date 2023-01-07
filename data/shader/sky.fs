@@ -13,14 +13,13 @@ void main (void)
 
 	w = clamp(w, 0.0, 1.0);
 
-
-
-	// vec3 sky_color = white * w_white + blue * w_blue + black * w_black; 
 	vec3 sky_color = mix(white, blue, w);
 
-
-	//sky_color *= clamp(1.0 / (-v_cam_pos.y * 0.01), 0.0, 1.0);
-
+	// blackness of space
+	{
+		float w = v_uv.y - ((v_cam_pos.y+10) / 20.0);
+		sky_color = mix(sky_color, black, w);
+	}
 
 	color = vec4(sky_color, 1.0);
 }

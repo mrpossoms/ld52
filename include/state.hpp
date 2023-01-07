@@ -26,6 +26,16 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 	}
 };
 
+struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
+{
+    std::vector<ray>& rays() override
+    {
+    	ray_list.clear();
+    	ray_list.push_back({position, velocity});
+    	return ray_list;
+    }	
+};
+
 struct World
 {
 
@@ -36,6 +46,7 @@ struct State
 	std::shared_ptr<game::Tweaker> tweaker;
 	
 	Player player;
+	std::vector<Abductee> abductees;
 	World world;
 };
 
