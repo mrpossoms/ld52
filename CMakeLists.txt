@@ -45,6 +45,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGL_SILENCE_DEPRECATION")
 
 # add all source files
+set(SOURCE ${SOURCE} src/gameplay.cpp)
 set(SOURCE ${SOURCE} src/tweaker.cpp)
 set(SOURCE ${SOURCE} src/renderer.cpp)
 set(SOURCE ${SOURCE} src/main.cpp)

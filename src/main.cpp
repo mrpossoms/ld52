@@ -10,7 +10,6 @@ struct ld52 : public g::core
 	g::asset::store assets;
 	game::State state;
 	std::shared_ptr<game::Renderer> renderer;
-	std::shared_ptr<game::Tweaker> tweaker;
 
 
 	ld52() = default;
@@ -18,15 +17,17 @@ struct ld52 : public g::core
 
 	virtual bool initialize()
 	{
-		tweaker = std::make_shared<game::Tweaker>(assets);
-		renderer = std::make_shared<game::Renderer>(assets, tweaker);
+		state.tweaker = std::make_shared<game::Tweaker>(assets);
+		renderer = std::make_shared<game::Renderer>(assets, state.tweaker);
+
+		state.player.position[1] = 4;
 
 		return true;
 	}
 
 	virtual void update(float dt)
 	{
-		game::gameplay::update(state, tweaker, dt);
+		game::gameplay::update(state, dt);
 
 		glClearColor(0.5, 0.5, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
