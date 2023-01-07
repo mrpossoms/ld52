@@ -16,9 +16,15 @@ struct Player : public g::dyn::particle
 	}
 };
 
+struct World
+{
+
+};
+
 struct State
 {
 	Player player;
+	World world;
 };
 
 } // namespace game
