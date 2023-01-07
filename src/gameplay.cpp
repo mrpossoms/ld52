@@ -22,19 +22,31 @@ void game::gameplay::update_player(game::State& state, float dt)
 void game::gameplay::update_dynamics(game::State& state, float dt)
 {
 	auto world_sdf = [&](const vec<3>& p) -> float {
-        return p[1] + 6;
+        return -p[1] + 3 * sin(p[0]) - 3;
     };
 	auto& world_settings = state.tweaker->objects["world"];
 	auto g = std::get<float>(world_settings.traits()["gravity"]);
 	g::dyn::cd::sdf_collider world_collider(world_sdf);
 
-	auto intersections = world_collider.intersections(state.player);
+	// update object velocities
+	{
+		state.player.velocity += {0, g * dt, 0 };
+	}
 
-    g::dyn::cr::resolve_linear<game::Player>(state.player, intersections);
+	// resolve collisions
+	{
+		auto intersections = world_collider.intersections(state.player);
 
-	// update player
-	state.player.velocity += {0, g * dt, 0 };
-	state.player.position += state.player.velocity * dt;
+		for (auto& i : intersections) { i.normal *= -1.f; }
+
+	    g::dyn::cr::resolve_linear<game::Player>(state.player, intersections, 0.0f);
+	}
+
+	// update positions
+	{
+		state.player.dyn_step(dt);
+	}
+	
 }
 
 void game::gameplay::update(game::State& state, float dt)

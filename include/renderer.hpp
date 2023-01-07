@@ -16,7 +16,9 @@ struct Renderer
 private:
 	g::asset::store& assets;
 	std::shared_ptr<game::Tweaker> tweaker;
+	
 	g::game::camera_perspective camera;
+	vec<3> camera_velocity;
 
 	g::gfx::mesh<g::gfx::vertex::pos_uv_norm> plane;
 };
