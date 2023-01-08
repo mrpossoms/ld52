@@ -26,7 +26,14 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			{
 				{ "gravity", -1.f }
 			}
-		}
+		},
+		{ 
+			"textures", 
+			{
+				{ "underground", "world.underground.pixelated.png" },
+				{ "ground", "world.ground.pixelated.png" },
+			}
+		},
 	}};
 
 	objects["abductee.dog"] = g::game::object{&assets, "abductee.dog.yaml", {

@@ -1,2 +1,5 @@
+textures:
+  ground: world.ground.pixelated.png
+  underground: world.underground.pixelated.png
 traits:
   gravity: -1
