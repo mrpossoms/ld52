@@ -8,6 +8,7 @@ static void update_player(game::State& state, float dt)
 	auto& world_settings = state.tweaker->objects["world"];
 	auto roll_speed = std::get<float>(player_settings.traits()["roll_speed"]);
 	auto thrust = std::get<float>(player_settings.traits()["thrust"]);
+	auto tractor = std::get<float>(player_settings.traits()["tractor"]);
 
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS) player.roll -= roll_speed * dt;
@@ -21,6 +22,15 @@ static void update_player(game::State& state, float dt)
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		auto down = -player.up();
+
+		for (auto& a : state.abductees)
+		{
+			auto delta = player.position - a.position;
+
+			tractor *= acosf(down.dot(-delta) / (delta.magnitude())) < (10.f * M_PI / 180.f);
+
+			a.velocity += delta * tractor * dt;
+		}
 	}
 }
 
@@ -57,6 +67,12 @@ static void update_dynamics(game::State& state, float dt)
 			auto intersections = world_collider.intersections(a);
 			for (auto& i : intersections) { i.normal *= -1.f; }
 			g::dyn::cr::resolve_linear<game::Abductee>(a, intersections, 0.0f);
+
+			if ((a.position - state.player.position).magnitude() < 1)
+			{
+				a = state.abductees[state.abductees.size() - 1];
+				state.abductees.pop_back();
+			}
 		}
 	}
 
@@ -67,6 +83,7 @@ static void update_dynamics(game::State& state, float dt)
 		for (auto& a : state.abductees)
 		{
 			a.dyn_step(dt);
+			a.position[2] = 0;
 		}
 	}
 	

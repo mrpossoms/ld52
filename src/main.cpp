@@ -20,7 +20,7 @@ struct ld52 : public g::core
 		state.tweaker = std::make_shared<game::Tweaker>(assets);
 		renderer = std::make_shared<game::Renderer>(assets, state);
 
-		state.player.position[1] = 0;
+		state.player.position[1] = 4;
 		state.player.position[2] = 0.1f;
 
 		state.abductees.push_back({});

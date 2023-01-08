@@ -8,7 +8,8 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			{
 				{ "hp", 99.f },
 				{ "roll_speed", 1.f },
-				{ "thrust", 1.f} 
+				{ "thrust", 1.f},
+				{ "tractor", 1.f}
 			}
 		},
 		{ 
