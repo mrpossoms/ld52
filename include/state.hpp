@@ -15,7 +15,7 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
     std::vector<ray>& rays() override
     {
     	ray_list.clear();
-    	ray_list.push_back({position, velocity});
+    	ray_list.push_back({position - vec<3>{0, 0.5, 0}, velocity});
     	return ray_list;
     }
 
@@ -28,12 +28,34 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 
 struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 {
+	enum Type
+	{
+		dog = 0,
+		cow,
+		chicken,
+		farmer,
+	};
+
+	Type type;
+
     std::vector<ray>& rays() override
     {
     	ray_list.clear();
-    	ray_list.push_back({position, velocity});
+    	ray_list.push_back({position - vec<3>{0, 0.5, 0}, velocity});
     	return ray_list;
-    }	
+    }
+
+    const std::string& obj_name() const
+    {
+    	const static std::string names[] = {
+    		"abductee.dog",
+    		"abductee.cow",
+    		"abductee.chicken",
+    		"abductee.farmer",
+    	};
+
+    	return names[(unsigned)type];
+    }
 };
 
 struct World

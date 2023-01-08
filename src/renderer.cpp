@@ -61,16 +61,13 @@ void game::Renderer::draw(game::State& state, float dt)
 	camera.aspect_ratio(g::gfx::aspect());
 	// camera.look_at(state.player.position);
 
+	// sky
 	glDisable(GL_DEPTH_TEST);
 	plane.using_shader(assets.shader("sky.vs+sky.fs"))
 	.set_camera(camera)
 	.draw<GL_TRIANGLE_FAN>();	
 	glEnable(GL_DEPTH_TEST);
 
-
-	auto model = mat4::translation(state.player.position) * mat4::rotation({0, 0, 1}, state.player.roll);
-
-	auto& player_settings = tweaker->objects["player"];
 
 	glDisable(GL_CULL_FACE);
 
@@ -80,13 +77,27 @@ void game::Renderer::draw(game::State& state, float dt)
         usage["u_model"].mat4(mat4::I());
     });
 
-	plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
-	["u_model"].mat4(model)
-	["u_tex"].texture(player_settings.texture("sprite"))
-	.set_camera(camera)
-	.draw<GL_TRIANGLE_FAN>();
+    for (auto& a : state.abductees)
+    {
+    	auto& abductee_settings = tweaker->objects[a.obj_name()];
+		auto model = mat4::translation(a.position);
+		
+		plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
+		["u_model"].mat4(model)
+		["u_tex"].texture(abductee_settings.texture("sprite"))
+		.set_camera(camera)
+		.draw<GL_TRIANGLE_FAN>();
+    }
 
-	glDisable(GL_DEPTH_TEST);
-	g::gfx::debug::print{camera}.color({1, 0, 0, 1}).ray(state.player.position, state.player.velocity);
-	glEnable(GL_DEPTH_TEST);
+    // player
+	{
+		auto model = mat4::translation(state.player.position) * mat4::rotation({0, 0, 1}, state.player.roll);
+		auto& player_settings = tweaker->objects["player"];
+
+		plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
+		["u_model"].mat4(model)
+		["u_tex"].texture(player_settings.texture("sprite"))
+		.set_camera(camera)
+		.draw<GL_TRIANGLE_FAN>();
+	}
 }
