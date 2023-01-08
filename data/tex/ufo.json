@@ -1,0 +1,21 @@
+{ "frames": {
+   "0.png": {
+    "frame": { "x": 1, "y": 1, "w": 104, "h": 61 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 104, "h": 61 },
+    "sourceSize": { "w": 104, "h": 61 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "ufo.png",
+  "format": "RGBA8888",
+  "size": { "w": 106, "h": 63 },
+  "scale": "1",
+  "frameTags": [
+  ]
+ }
+}

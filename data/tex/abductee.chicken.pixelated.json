@@ -1,0 +1,21 @@
+{ "frames": {
+   "0.png": {
+    "frame": { "x": 1, "y": 1, "w": 18, "h": 21 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 18, "h": 21 },
+    "sourceSize": { "w": 18, "h": 21 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "abductee.chicken.pixelated.png",
+  "format": "RGBA8888",
+  "size": { "w": 20, "h": 23 },
+  "scale": "1",
+  "frameTags": [
+  ]
+ }
+}
