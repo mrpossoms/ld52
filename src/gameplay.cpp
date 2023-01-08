@@ -21,12 +21,10 @@ void game::gameplay::update_player(game::State& state, float dt)
 
 void game::gameplay::update_dynamics(game::State& state, float dt)
 {
-	auto world_sdf = [&](const vec<3>& p) -> float {
-        return -p[1] + 3 * sin(p[0]) - 3;
-    };
+
 	auto& world_settings = state.tweaker->objects["world"];
 	auto g = std::get<float>(world_settings.traits()["gravity"]);
-	g::dyn::cd::sdf_collider world_collider(world_sdf);
+	g::dyn::cd::sdf_collider world_collider(state.world.sdf);
 
 	// update object velocities
 	{

@@ -38,7 +38,13 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 
 struct World
 {
+	struct Tile
+	{
+		vec<3> corners[2];
 
+	};
+
+	g::game::sdf sdf;
 };
 
 struct State

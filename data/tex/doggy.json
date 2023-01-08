@@ -30,7 +30,8 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 29, "h": 23 },
     "sourceSize": { "w": 29, "h": 23 },
     "duration": 83
-   }
+   },
+   
  },
  "meta": {
   "app": "https://www.aseprite.org/",

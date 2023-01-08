@@ -9,7 +9,7 @@ namespace game
 
 struct Renderer
 {
-	Renderer(g::asset::store& assets, std::shared_ptr<game::Tweaker> tweaker);
+	Renderer(g::asset::store& assets, game::State& state);
 
 	void draw(game::State& state, float dt);
 
@@ -21,6 +21,7 @@ private:
 	vec<3> camera_velocity;
 
 	g::gfx::mesh<g::gfx::vertex::pos_uv_norm> plane;
+	std::unique_ptr<g::gfx::density_volume<g::gfx::vertex::pos_norm_tan>> terrain;
 };
 
 }
