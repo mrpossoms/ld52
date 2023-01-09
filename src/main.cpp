@@ -36,8 +36,6 @@ struct ld52 : public g::core
 		state.world.sdf = [](const vec<3>& p) -> float {
         auto d = -p[1] + sin(p[0] / 10) + sin(p[0] / 3) * 0.3f + sin(p[0] + M_PI / 2) * 0.125f - 3;
     
-        if (p[2] > 1) { d = -1; }
-
         return d;
     };
 
@@ -74,6 +72,8 @@ int main (int argc, const char* argv[])
 
 	opts.name = "ld52";
 	opts.gfx.fullscreen = false;
+	opts.gfx.width = 1024;
+	opts.gfx.height = 768;
 
 #ifdef __EMSCRIPTEN__
 	auto monitor = glfwGetPrimaryMonitor();

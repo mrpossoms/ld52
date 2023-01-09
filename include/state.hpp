@@ -16,7 +16,7 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
     std::vector<ray>& rays() override
     {
     	ray_list.clear();
-    	ray_list.push_back({position - vec<3>{0, 0.5, 0}, velocity});
+    	ray_list.push_back({position - vec<3>{0, 0.25, 0}, velocity});
     	return ray_list;
     }
 
@@ -42,8 +42,15 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 
     std::vector<ray>& rays() override
     {
+    	const vec<3> offsets[] = {
+    		{0, 0.25, 0},
+    		{0, 0.25, 0},
+    		{0, 0.0625, 0},
+    		{0, 0.25, 0}
+    	};
+
     	ray_list.clear();
-    	ray_list.push_back({position - vec<3>{0, 0.5, 0}, velocity});
+    	ray_list.push_back({position - offsets[type], velocity});
     	return ray_list;
     }
 

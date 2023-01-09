@@ -16,7 +16,9 @@ void main (void)
 {
 	v_uv = a_uv;
 
-	vec3 aspect = vec3(1.0, u_sprite_sheet_frame_size.y / u_sprite_sheet_frame_size.x, 1.0);
+	float s_y = u_sprite_sheet_frame_size.y / u_sprite_sheet_frame_size.x;
+	float scale = u_sprite_sheet_frame_size.x / 200.0;
+	vec3 aspect = vec3(1.0, s_y, 1.0) * scale;
 
 	gl_Position = u_proj * u_view * u_model * vec4(a_position * aspect, 1.0);
 }

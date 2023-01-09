@@ -87,7 +87,7 @@ static void update_dynamics(game::State& state, float dt)
 	// update positions
 	{
 		state.player.dyn_step(dt);
-		state.player.position[2] = 0.1f; // lock player at z 0.1
+		//state.player.position[2] = 0.1f; // lock player at z 0.1
 
 		for (auto& a : state.abductees)
 		{
