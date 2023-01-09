@@ -11,6 +11,7 @@ namespace game
 struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 {
 	float roll = 0;
+	float hoovering = 0;
 
     std::vector<ray>& rays() override
     {
@@ -36,7 +37,7 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 		farmer,
 	};
 
-	Type type;
+	unsigned type;
 
     std::vector<ray>& rays() override
     {
@@ -76,6 +77,7 @@ struct State
 	Player player;
 	std::vector<Abductee> abductees;
 	World world;
+	float time;
 };
 
 } // namespace game

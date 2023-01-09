@@ -45,7 +45,7 @@ game::Renderer::Renderer(g::asset::store& assets, game::State& state) : assets(a
     // setup the density_volume instance which will be responsible for terrain generation
     terrain = std::make_unique<g::gfx::density_volume<g::gfx::vertex::pos_norm_tan>>(state.world.sdf, generator, offsets);
     terrain->scale = 10; // size of each block in world units
-    terrain->depth = 5; // resolution of terrain blocks
+    terrain->depth = 3; // resolution of terrain blocks
 
 }
 
@@ -56,27 +56,52 @@ void game::Renderer::draw(game::State& state, float dt)
 	error[2] = 0;
 	camera_velocity += error * 0.01f * dt;
 
-	camera.position += error * 0.1f + camera_velocity * dt;
+	camera.position[0] = state.player.position[0]; //+= error * 0.1f + camera_velocity * dt;
+	camera.position[1] = state.player.position[1];
 
 	camera.aspect_ratio(g::gfx::aspect());
 	// camera.look_at(state.player.position);
 
 	// sky
 	glDisable(GL_DEPTH_TEST);
-	plane.using_shader(assets.shader("sky.vs+sky.fs"))
+	plane.using_shader(assets.shader("post.vs+sky.fs"))
 	.set_camera(camera)
-	.draw<GL_TRIANGLE_FAN>();	
+	.draw<GL_TRIANGLE_FAN>();
+
+	plane.using_shader(assets.shader("post.vs+tractor-beam.fs"))
+	.set_camera(camera)
+	["u_ship_down"].vec2(-state.player.up().slice<2>())
+	["u_ship_pos"].vec3(state.player.position)
+	["u_beam_angle"].flt(10.f * M_PI / 180.f)
+	["u_power"].flt(state.player.hoovering)
+	["u_time"].flt(state.time)
+	.draw<GL_TRIANGLE_FAN>();
+
 	glEnable(GL_DEPTH_TEST);
 
 
 	glDisable(GL_CULL_FACE);
 
-	terrain->update(camera);
-    terrain->draw(camera, assets.shader("terrain.vs+terrain.fs"), [&](g::gfx::shader::usage& usage) {
-        // this allows the user to set shader uniforms for each block before it's drawn
-        usage["u_model"].mat4(mat4::I());
-    });
+	// terrain->update(camera);
+    // terrain->draw(camera, assets.shader("terrain.vs+terrain.fs"), [&](g::gfx::shader::usage& usage) {
+    //     // this allows the user to set shader uniforms for each block before it's drawn
+    //     usage["u_model"].mat4(mat4::I());
+    // });
+	{
+		auto& world_settings = tweaker->objects["world"];
 
+		auto model = mat4::translation(state.player.position) * mat4::scale({10, 10, 10});
+		glDisable(GL_DEPTH_TEST);
+		plane.using_shader(assets.shader("terrain-post.vs+terrain-post.fs"))
+		["u_model"].mat4(model)
+		["u_under_ground"].texture(world_settings.texture("underground"))
+		["u_above_ground"].texture(world_settings.texture("ground"))
+		.set_camera(camera)
+		.draw<GL_TRIANGLE_FAN>();
+		glEnable(GL_DEPTH_TEST);		
+	}
+
+	glDisable(GL_DEPTH_TEST);
     for (auto& a : state.abductees)
     {
     	auto& abductee_settings = tweaker->objects[a.obj_name()];
@@ -88,6 +113,7 @@ void game::Renderer::draw(game::State& state, float dt)
 		.set_camera(camera)
 		.draw<GL_TRIANGLE_FAN>();
     }
+	glEnable(GL_DEPTH_TEST);
 
     // player
 	{

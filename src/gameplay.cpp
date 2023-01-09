@@ -8,7 +8,7 @@ static void update_player(game::State& state, float dt)
 	auto& world_settings = state.tweaker->objects["world"];
 	auto roll_speed = std::get<float>(player_settings.traits()["roll_speed"]);
 	auto thrust = std::get<float>(player_settings.traits()["thrust"]);
-	auto tractor = std::get<float>(player_settings.traits()["tractor"]);
+	const auto tractor_base = std::get<float>(player_settings.traits()["tractor"]);
 
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS) player.roll -= roll_speed * dt;
@@ -23,14 +23,22 @@ static void update_player(game::State& state, float dt)
 	{
 		auto down = -player.up();
 
+		player.hoovering = 1.0f;
+
 		for (auto& a : state.abductees)
 		{
 			auto delta = player.position - a.position;
 
-			tractor *= acosf(down.dot(-delta) / (delta.magnitude())) < (10.f * M_PI / 180.f);
+			auto tractor = tractor_base * (acosf(down.dot(-delta) / (delta.magnitude())) < (10.f * M_PI / 180.f)) / delta.dot(delta);
+
+			player.hoovering += std::min(0.25f, tractor);
 
 			a.velocity += delta * tractor * dt;
 		}
+	}
+	else
+	{
+		player.hoovering = 0;
 	}
 }
 
@@ -95,4 +103,6 @@ void game::gameplay::update(game::State& state, float dt)
 	update_player(state, dt);
 
 	update_dynamics(state, dt);
+
+	state.time += dt;
 }

@@ -30,8 +30,8 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 		{ 
 			"textures", 
 			{
-				{ "underground", "world.underground.pixelated.png" },
-				{ "ground", "world.ground.pixelated.png" },
+				{ "underground", "world.underground.pixelated.repeating.png" },
+				{ "ground", "world.ground.pixelated.repeating.png" },
 			}
 		},
 	}};
