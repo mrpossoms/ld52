@@ -20,24 +20,30 @@ struct ld52 : public g::core
 		state.tweaker = std::make_shared<game::Tweaker>(assets);
 		renderer = std::make_shared<game::Renderer>(assets, state);
 
+		state.world.sdf = [](const vec<3>& p) -> float {
+			auto d = -p[1] + sinf(p[0] / 10) + sinf(p[0] / 3) * 0.3f + sinf(p[0] + M_PI / 2) * 0.125f - 3;
+
+			return d;
+		};
+
 		state.player.position[1] = 4;
 		state.player.position[2] = 0.1f;
 
 		for (unsigned i = 100; i--;)
 		{
 			state.abductees.push_back({});
+			auto& a = state.abductees.back();
+			
+			a.position[0] = (::rand() % 1024 / 1024.f) * 20.f - 10.f;
+			a.position[1] = 3;
 
-			state.abductees.back().position[0] = (random() % 1024 / 1024.f) * 20.f - 10.f;
-			state.abductees.back().type = (unsigned)i%4;
-    	auto& abductee_settings = state.tweaker->objects[state.abductees.back().obj_name()];
-			state.abductees.back().sprite = abductee_settings.sprite("sprite").make_instance();
+			//while (state.world.sdf(a.position + vec<3>{0, -2, 0}) < 0) a.position[1] -= 0.1f;
+
+			a.type = (unsigned)i%4;
+    		auto& abductee_settings = state.tweaker->objects[a.obj_name()];
+			a.sprite = abductee_settings.sprite("sprite").make_instance();
 		}
 
-		state.world.sdf = [](const vec<3>& p) -> float {
-        auto d = -p[1] + sin(p[0] / 10) + sin(p[0] / 3) * 0.3f + sin(p[0] + M_PI / 2) * 0.125f - 3;
-    
-        return d;
-    };
 
 		return true;
 	}
