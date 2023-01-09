@@ -69,12 +69,18 @@ void game::Renderer::draw(game::State& state, float dt)
 	glDisable(GL_DEPTH_TEST);
     for (auto& a : state.abductees)
     {
-    	auto& abductee_settings = tweaker->objects[a.obj_name()];
+
 		auto model = mat4::translation(a.position);
 		
-		plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
+		// plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
+		// ["u_model"].mat4(model)
+		// ["u_tex"].texture(abductee_settings.texture("sprite"))
+		// .set_camera(camera)
+		// .draw<GL_TRIANGLE_FAN>();
+
+		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
 		["u_model"].mat4(model)
-		["u_tex"].texture(abductee_settings.texture("sprite"))
+		.set_sprite(a.sprite)
 		.set_camera(camera)
 		.draw<GL_TRIANGLE_FAN>();
     }
@@ -87,7 +93,6 @@ void game::Renderer::draw(game::State& state, float dt)
 
 		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
 		["u_model"].mat4(model)
-		// ["u_tex"].texture(player_settings.texture("sprite"))
 		.set_sprite(player_sprite)
 		.set_camera(camera)
 		.draw<GL_TRIANGLE_FAN>();

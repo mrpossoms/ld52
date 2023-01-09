@@ -44,9 +44,9 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			}
 		},
 		{ 
-			"textures", 
+			"sprites", 
 			{
-				{ "sprite", "abductee.dog.pixelated.png" }
+				{ "sprite", "abductee.dog.pixelated.json" }
 			}
 		},
 	}};
@@ -59,9 +59,9 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			}
 		},
 		{ 
-			"textures", 
+			"sprites", 
 			{
-				{ "sprite", "abductee.cow.pixelated.png" }
+				{ "sprite", "abductee.cow.pixelated.json" }
 			}
 		},
 	}};
@@ -74,9 +74,9 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			}
 		},
 		{ 
-			"textures", 
+			"sprites", 
 			{
-				{ "sprite", "abductee.chicken.pixelated.png" }
+				{ "sprite", "abductee.chicken.pixelated.json" }
 			}
 		},
 	}};
@@ -89,9 +89,9 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			}
 		},
 		{ 
-			"textures", 
+			"sprites", 
 			{
-				{ "sprite", "abductee.farmer.pixelated.png" }
+				{ "sprite", "abductee.farmer.pixelated.json" }
 			}
 		},
 	}};

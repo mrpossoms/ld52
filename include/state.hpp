@@ -38,6 +38,7 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 	};
 
 	unsigned type;
+	g::gfx::sprite::instance sprite;
 
     std::vector<ray>& rays() override
     {

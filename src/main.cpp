@@ -29,6 +29,8 @@ struct ld52 : public g::core
 
 			state.abductees.back().position[0] = (random() % 1024 / 1024.f) * 20.f - 10.f;
 			state.abductees.back().type = (unsigned)i%4;
+    	auto& abductee_settings = state.tweaker->objects[state.abductees.back().obj_name()];
+			state.abductees.back().sprite = abductee_settings.sprite("sprite").make_instance();
 		}
 
 		state.world.sdf = [](const vec<3>& p) -> float {
@@ -84,6 +86,7 @@ int main (int argc, const char* argv[])
 #endif
 
 	game.start(opts);
+
 
 	return 0;
 }
