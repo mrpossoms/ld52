@@ -17,5 +17,7 @@ void main (void)
 
 	if (d < 0) discard;
 
-	color = mix(texture(u_above_ground, v_world.xy), texture(u_under_ground, v_world.xy), d);
+	vec2 uv = v_world.xy * 0.1;
+
+	color = mix(texture(u_above_ground, uv), texture(u_under_ground, uv), clamp(d, 0.0, 1.0));
 }
