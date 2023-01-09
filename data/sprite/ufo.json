@@ -16,6 +16,7 @@
   "size": { "w": 106, "h": 63 },
   "scale": "1",
   "frameTags": [
+   { "name": "default", "from": 0, "to": 0, "direction": "forward" }
   ]
  }
 }
