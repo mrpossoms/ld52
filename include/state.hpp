@@ -67,6 +67,24 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     }
 };
 
+struct Prop
+{
+	unsigned type;
+	vec<3> position;
+
+    const std::string& obj_name() const
+    {
+    	const static std::string names[] = {
+    		"Tree.json",
+    		"",
+    		"",
+    		"",
+    	};
+
+    	return names[(unsigned)type];
+    }
+};
+
 struct World
 {
 	struct Tile

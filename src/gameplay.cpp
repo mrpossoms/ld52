@@ -1,6 +1,5 @@
 #include "gameplay.hpp"
 
-
 static void update_player(game::State& state, float dt)
 {
 	auto& player = state.player;
@@ -96,6 +95,29 @@ static void update_dynamics(game::State& state, float dt)
 		}
 	}
 	
+}
+
+float game::gameplay::surface_at_x(const game::State& state, float x)
+{
+	std::function<float(float, float, unsigned)> subdivide = [&](float y0, float y1, unsigned depth) -> float {
+		// auto d0 = state.world.sdf({x, y0, 0});
+		auto mid = (y0 + y1) * 0.5f;
+		auto d = state.world.sdf({x, mid, 0});
+		// auto d1 = state.world.sdf({x, y1, 0});
+		
+		if (depth > 7) return mid;
+
+		if (d < 0) 
+		{ // in terrain
+			return subdivide(y0, mid, depth + 1);
+		}
+		else
+		{
+			return subdivide(mid, y1, depth + 1);
+		}
+	};
+
+	return subdivide(-4, 4, 0);
 }
 
 void game::gameplay::update(game::State& state, float dt)

@@ -14,6 +14,8 @@ struct Renderer
 	void draw(game::State& state, float dt);
 
 private:
+	void draw_suitability_grid(const game::State& state, g::game::camera& cam);
+
 	g::asset::store& assets;
 	std::shared_ptr<game::Tweaker> tweaker;
 	
