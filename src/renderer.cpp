@@ -30,7 +30,7 @@ void game::Renderer::draw_suitability_grid(const game::State& state, g::game::ca
 
 	for (int x = 0; x < N; x++)
 	{
-		auto p = vec<3>{floor(x - h_N + state.player.position[0]), ys[x], 0};
+		auto p = vec<3>{(float)(x - h_N + player_x), ys[x], 0};
 
 		if (x > 0 && x < N - 1)
 		{
@@ -89,22 +89,6 @@ void game::Renderer::draw(game::State& state, float dt)
 
 
 	glDisable(GL_CULL_FACE);
-
-	{
-		auto model = mat4::translation(vec<3>{0, game::gameplay::surface_at_x(state, 0), 0});
-		
-		// plane.using_shader(assets.shader("sprite.vs+sprite.fs"))
-		// ["u_model"].mat4(model)
-		// ["u_tex"].texture(abductee_settings.texture("sprite"))
-		// .set_camera(camera)
-		// .draw<GL_TRIANGLE_FAN>();
-
-		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
-		["u_model"].mat4(model)
-		.set_sprite(assets.sprite("Tree.json").make_instance())
-		.set_camera(camera)
-		.draw<GL_TRIANGLE_FAN>();
-	}
 
 	{
 		auto& world_settings = tweaker->objects["world"];
