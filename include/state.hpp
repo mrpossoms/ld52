@@ -60,7 +60,7 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     std::vector<ray>& rays() override
     {
     	const vec<3> offsets[] = {
-    		{0, 0.25, 0},
+    		{0, 0.125, 0},
     		{0, 0.25, 0},
     		{0, 0.0625, 0},
     		{0, 0.25, 0}

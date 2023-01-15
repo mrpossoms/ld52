@@ -1,22 +1,51 @@
 { "frames": {
-   "0.png": {
-    "frame": { "x": 1, "y": 1, "w": 87, "h": 57 },
+   "0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 29, "h": 23 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 87, "h": 57 },
-    "sourceSize": { "w": 87, "h": 57 },
-    "duration": 100
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 29, "h": 23 },
+    "sourceSize": { "w": 29, "h": 23 },
+    "duration": 83
+   },
+   "1.aseprite": {
+    "frame": { "x": 29, "y": 0, "w": 29, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 29, "h": 23 },
+    "sourceSize": { "w": 29, "h": 23 },
+    "duration": 83
+   },
+   "2.aseprite": {
+    "frame": { "x": 58, "y": 0, "w": 29, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 29, "h": 23 },
+    "sourceSize": { "w": 29, "h": 23 },
+    "duration": 83
+   },
+   "3.aseprite": {
+    "frame": { "x": 87, "y": 0, "w": 29, "h": 23 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 29, "h": 23 },
+    "sourceSize": { "w": 29, "h": 23 },
+    "duration": 83
    }
  },
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.2.40-x64",
-  "image": "abductee.cow.pixelated.png",
+  "image": "doggy.png",
   "format": "RGBA8888",
-  "size": { "w": 89, "h": 59 },
+  "size": { "w": 116, "h": 23 },
   "scale": "1",
   "frameTags": [
-      { "name": "default", "from": 0, "to": 0, "direction": "forward" }
+   { "name": "default", "from": 0, "to": 3, "direction": "forward" }
+  ],
+  "layers": [
+   { "name": "Dog", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
   ]
  }
 }

@@ -86,6 +86,8 @@ static void update_dynamics(game::State& state, float dt)
 				state.abductees.pop_back();
 			}
 
+			a.sprite.update(dt, 0);
+
 			if (intersections.size() > 0)
 			{
 				a.velocity[0] += a.move.speed * dt;

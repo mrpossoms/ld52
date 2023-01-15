@@ -74,6 +74,8 @@ void game::Renderer::draw_props(const game::State& state, g::game::camera& cam)
 
 void game::Renderer::draw(game::State& state, float dt)
 {
+	glDisable(GL_CULL_FACE);
+
 	auto error = state.player.position - camera.position;
 	error[2] = 0;
 	camera_velocity += error * 0.01f * dt;
@@ -91,8 +93,20 @@ void game::Renderer::draw(game::State& state, float dt)
 	.draw<GL_TRIANGLE_FAN>();
 	glEnable(GL_DEPTH_TEST);
 
+	{ // terrain
+		glDisable(GL_DEPTH_TEST);
+		auto& world_settings = tweaker->objects["world"];
 
-	glDisable(GL_CULL_FACE);
+		auto model = mat4::translation(vec<3>{state.player.position[0], state.player.position[1], -5}) * mat4::scale({ 100, 100, 100 });
+		plane.using_shader(assets.shader("terrain-post.vs+terrain-post.fs"))
+			["u_model"].mat4(model)
+			["u_under_ground"].texture(world_settings.texture("ground"))
+			["u_above_ground"].texture(world_settings.texture("ground"))
+			.set_camera(camera)
+			.draw<GL_TRIANGLE_FAN>();
+		glEnable(GL_DEPTH_TEST);
+	}
+
 
 	glDisable(GL_DEPTH_TEST);
 
