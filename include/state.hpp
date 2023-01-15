@@ -8,6 +8,12 @@ using namespace xmath;
 namespace game
 {
 
+static float random_norm()
+{
+	return ((::rand() % 2048) - 1024) / 1024.f;
+}
+
+
 struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 {
 	float roll = 0;
@@ -39,6 +45,17 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 
 	unsigned type;
 	g::gfx::sprite::instance sprite;
+
+	struct {
+		float speed;
+		float count_down;
+
+		void next()
+		{
+			count_down = (random_norm() + 1) * 10;
+			speed = random_norm() * 10.f;
+		}
+	} move;
 
     std::vector<ray>& rays() override
     {
@@ -76,9 +93,9 @@ struct Prop
     {
     	const static std::string names[] = {
     		"Tree.json",
-    		"",
-    		"",
-    		"",
+    		"Rock.json",
+    		"Haybale.json",
+    		"Haybale.json",
     	};
 
     	return names[(unsigned)type];
@@ -87,11 +104,7 @@ struct Prop
 
 struct World
 {
-	struct Tile
-	{
-		vec<3> corners[2];
-
-	};
+	std::unordered_set<int> spawns;
 
 	g::game::sdf sdf;
 };

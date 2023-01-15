@@ -71,6 +71,11 @@ static void update_dynamics(game::State& state, float dt)
 		// abductees
 		for (auto& a : state.abductees)
 		{
+	    	if (abs(a.position[0] - state.player.position[0]) > 10)
+	    	{
+	    		continue;
+	    	}
+
 			auto intersections = world_collider.intersections(a);
 			for (auto& i : intersections) { i.normal *= -1.f; }
 			g::dyn::cr::resolve_linear<game::Abductee>(a, intersections, 0.0f);
@@ -80,6 +85,25 @@ static void update_dynamics(game::State& state, float dt)
 				a = state.abductees[state.abductees.size() - 1];
 				state.abductees.pop_back();
 			}
+
+			if (intersections.size() > 0)
+			{
+				a.velocity[0] += a.move.speed * dt;
+				a.velocity[1] += 2.f * dt;
+			}
+
+	    	a.move.count_down -= dt;
+	    
+	    	if ((a.position - state.player.position).magnitude() < 4)
+	    	{
+	    		a.move.count_down = 1;
+	    		a.move.speed = std::clamp(a.position[0] - state.player.position[0], -1.f, 1.f) * 20.f;
+	    	}
+
+	    	if (a.move.count_down <= 0)
+	    	{
+	    		a.move.next();
+	    	}
 		}
 	}
 
@@ -95,6 +119,55 @@ static void update_dynamics(game::State& state, float dt)
 		}
 	}
 	
+}
+
+void update_world(game::State& state)
+{
+	constexpr auto N = 15;
+	constexpr auto h_N = (N - 1) >> 1;
+	static float ys[N];
+
+	int player_x = state.player.position[0];
+
+	for (int x = 0; x < N; x++)
+	{
+		ys[x] = game::gameplay::surface_at_x(state, x - h_N + player_x);
+	}
+
+	for (int x = 0; x < N; x++)
+	{
+		// auto p = vec<3>{(float)(x - h_N + player_x), ys[x], 0};
+
+		if (x > 0 && x < N - 1)
+		{
+			float divergence = (-ys[x-1]) + (2.f * ys[x]) + (-ys[x+1]);
+			auto _x = x - h_N + player_x;
+
+			if (divergence > 0)
+			{
+				if(!state.world.spawns.contains(_x))
+				{
+					auto num = ::rand() % 4;
+
+					for (;num--;)
+					{
+						state.abductees.push_back({});
+						auto& a = state.abductees.back();
+						
+						a.position[0] = ((::rand() % 1024 / 512.f) - 1.f) + _x;
+						a.position[1] = ys[x] + 0.25f;
+
+						a.type = (unsigned)::rand()%4;
+			    		auto& abductee_settings = state.tweaker->objects[a.obj_name()];
+						a.sprite = abductee_settings.sprite("sprite").make_instance();
+						a.move.next();
+					}
+
+					state.world.spawns.insert(_x);
+				}
+			}
+		}
+	}
 }
 
 float game::gameplay::surface_at_x(const game::State& state, float x)
@@ -125,6 +198,8 @@ void game::gameplay::update(game::State& state, float dt)
 	update_player(state, dt);
 
 	update_dynamics(state, dt);
+	
+	update_world(state);
 
 	state.time += dt;
 }

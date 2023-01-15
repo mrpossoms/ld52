@@ -15,7 +15,7 @@ game::Renderer::Renderer(g::asset::store& assets, game::State& state) : assets(a
 	player_sprite = assets.sprite("ufo.json").make_instance();
 }
 
-void game::Renderer::draw_suitability_grid(const game::State& state, g::game::camera& cam)
+void game::Renderer::draw_props(const game::State& state, g::game::camera& cam)
 {
 	constexpr auto N = 15;
 	constexpr auto h_N = (N - 1) >> 1;
@@ -28,11 +28,24 @@ void game::Renderer::draw_suitability_grid(const game::State& state, g::game::ca
 		ys[x] = game::gameplay::surface_at_x(state, x - h_N + player_x);
 	}
 
-	auto tree_sprite = assets.sprite("Tree.json").make_instance();
+	g::gfx::sprite::instance sprites[] = {
+		assets.sprite("barn.json").make_instance(),		
+		assets.sprite("Rock.json").make_instance(),
+		assets.sprite("haybale.json").make_instance(),
+		assets.sprite("Tree.json").make_instance(),
+	};
+
+	constexpr float y_offsets[] = {
+		0.4f,
+		0.0625f,
+		0.125f,
+		0.5f,
+	};
 
 	for (int x = 0; x < N; x++)
 	{
-		auto p = vec<3>{(float)(x - h_N + player_x), ys[x] + 0.5f, 0};
+		auto sprite_idx = std::clamp(static_cast<int>(4.f * (sin(player_x + x) * 0.5f + 0.5f)), 0, 3);
+		auto p = vec<3>{(float)(x - h_N + player_x), ys[x] + y_offsets[sprite_idx], 0};
 
 		if (x > 0 && x < N - 1)
 		{
@@ -43,19 +56,18 @@ void game::Renderer::draw_suitability_grid(const game::State& state, g::game::ca
 				auto model = mat4::translation(p);
 				plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
 				["u_model"].mat4(model)
-				.set_sprite(tree_sprite)
+				.set_sprite(sprites[sprite_idx])
 				.set_camera(camera)
 				.draw<GL_TRIANGLE_FAN>();
-				g::gfx::debug::print{cam}.color({0, 1, 0, 1}).ray(p, {0.f, 1.f, 0.f});
 			}
 			else
 			{
-				g::gfx::debug::print{cam}.color({0, 0, 1, 1}).ray(p, {0.f, 1.f, 0.f});	
+				// g::gfx::debug::print{cam}.color({0, 0, 1, 1}).ray(p, {0.f, 1.f, 0.f});	
 			}
 		}
 		else
 		{
-			g::gfx::debug::print{cam}.color({1, 0, 0, 1}).ray(p, {0.f, 1.f, 0.f});
+			// g::gfx::debug::print{cam}.color({1, 0, 0, 1}).ray(p, {0.f, 1.f, 0.f});
 		}
 	}
 }
@@ -84,12 +96,17 @@ void game::Renderer::draw(game::State& state, float dt)
 
 	glDisable(GL_DEPTH_TEST);
 
-	draw_suitability_grid(state, camera);
+	draw_props(state, camera);
 
     for (auto& a : state.abductees)
     {
 
-		auto model = mat4::translation(a.position);
+    	if (abs(a.position[0] - state.player.position[0]) > 10)
+    	{
+    		continue;
+    	}
+
+		auto model = mat4::translation(a.position) * mat4::scale({ a.velocity[0] > 0 ? 1.f : -1.f, 1.f, 1.f});
 		
 
 		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
@@ -113,7 +130,7 @@ void game::Renderer::draw(game::State& state, float dt)
 	{ // terrain
 		auto& world_settings = tweaker->objects["world"];
 
-		auto model = mat4::translation(state.player.position) * mat4::scale({10, 10, 10});
+		auto model = mat4::translation(state.player.position * vec<3>{1.f, 1.f, 0.f}) * mat4::scale({10, 10, 10});
 		plane.using_shader(assets.shader("terrain-post.vs+terrain-post.fs"))
 		["u_model"].mat4(model)
 		["u_under_ground"].texture(world_settings.texture("underground"))
