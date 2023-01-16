@@ -29,13 +29,13 @@ struct ld52 : public g::core
 		state.player.position[1] = 4;
 		state.player.position[2] = 0.1f;
 
-		// for (unsigned i = 100; i--;)
+		// for (unsigned i = 1; i--;)
 		// {
 		// 	state.abductees.push_back({});
 		// 	auto& a = state.abductees.back();
 			
-		// 	a.position[0] = (::rand() % 1024 / 1024.f) * 20.f - 10.f;
-		// 	a.position[1] = 3;
+		// 	a.position[0] = 0;
+		// 	a.position[1] = 1;
 
 		// 	//while (state.world.sdf(a.position + vec<3>{0, -2, 0}) < 0) a.position[1] -= 0.1f;
 
