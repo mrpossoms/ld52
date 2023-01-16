@@ -1,5 +1,5 @@
 { "frames": {
-   "Sprite-0003.": {
+   "0": {
     "frame": { "x": 0, "y": 0, "w": 87, "h": 55 },
     "rotated": false,
     "trimmed": false,
@@ -7,7 +7,7 @@
     "sourceSize": { "w": 87, "h": 55 },
     "duration": 100
    },
-   "Sprite-0003.": {
+   "1": {
     "frame": { "x": 87, "y": 0, "w": 87, "h": 55 },
     "rotated": false,
     "trimmed": false,
