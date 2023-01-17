@@ -9,16 +9,21 @@ static void update_player(game::State& state, float dt)
 	auto thrust = std::get<float>(player_settings.traits()["thrust"]);
 	const auto tractor_base = std::get<float>(player_settings.traits()["tractor"]);
 
-
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS) player.roll -= roll_speed * dt;
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS) player.roll += roll_speed * dt;
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS && player.energy > 0) player.roll -= roll_speed * dt;
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS && player.energy > 0) player.roll += roll_speed * dt;
 	
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS)
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS && player.energy > 0)
 	{
 		player.velocity += player.up() * thrust * dt;
+		player.energy -= thrust * dt;
+		player.thrust = thrust;
+	}
+	else
+	{
+		player.thrust = 0;
 	}
 
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_SPACE) == GLFW_PRESS && player.energy > 0)
 	{
 		auto down = -player.up();
 
@@ -33,7 +38,10 @@ static void update_player(game::State& state, float dt)
 			player.hoovering += std::min(0.25f, tractor);
 
 			a.velocity += delta * tractor * dt;
+			a.ang_vel += tractor * 3 * dt;
 		}
+
+		player.energy -= player.hoovering * dt;
 	}
 	else
 	{
@@ -68,6 +76,11 @@ static void update_dynamics(game::State& state, float dt)
 	    g::dyn::cr::resolve_linear<game::Player>(state.player, intersections, 0.0f);
 	
 
+		if (intersections.size() > 0)
+		{
+			state.player.energy = 0;
+		}
+
 		// abductees
 		for (auto& a : state.abductees)
 		{
@@ -78,20 +91,36 @@ static void update_dynamics(game::State& state, float dt)
 
 			auto intersections = world_collider.intersections(a);
 			for (auto& i : intersections) { i.normal *= -1.f; }
+			
+			if (intersections.size() > 0)
+			{ // touching ground
+				if (a.velocity[1] < -1.f)
+				{ // they hit the ground with too much force and died
+					a = state.abductees[state.abductees.size() - 1];
+					state.abductees.pop_back();
+				}
+			}
+
+			// correct velocities to avoid penetration
 			g::dyn::cr::resolve_linear<game::Abductee>(a, intersections, 0.0f);
 
-			if ((a.position - state.player.position).magnitude() < 1)
+			// Despawn when they are close to the ship
+			if ((a.position - state.player.position).magnitude() < 1 && state.player.hoovering > 0)
 			{
 				a = state.abductees[state.abductees.size() - 1];
 				state.abductees.pop_back();
+			
+				state.player.abductee_counts[(unsigned)a.type] += 1;
 			}
 
 			a.sprite.update(dt, 0);
 
 			if (intersections.size() > 0)
-			{
+			{ // touching the ground
 				a.velocity[0] += a.move.speed * dt;
 				a.velocity[1] += 2.f * dt;
+				a.ang_vel = 0;
+				a.angle = 0;
 			}
 
 	    	a.move.count_down -= dt;
@@ -117,6 +146,7 @@ static void update_dynamics(game::State& state, float dt)
 		for (auto& a : state.abductees)
 		{
 			a.dyn_step(dt);
+			a.angle += a.ang_vel * dt;
 			a.position[2] = 0; // lock abductees at z 0
 		}
 	}
@@ -159,7 +189,7 @@ void update_world(game::State& state)
 						a.position[0] = ((::rand() % 1024 / 512.f) - 1.f) + _x;
 						a.position[1] = ys[x] + 0.25f;
 
-						a.type = (unsigned)::rand()%4;
+						a.type = (unsigned)::rand()%game::Abductee::Type::COUNT;
 			    		auto& abductee_settings = state.tweaker->objects[a.obj_name()];
 						a.sprite = abductee_settings.sprite("sprite").make_instance();
 						a.move.next();

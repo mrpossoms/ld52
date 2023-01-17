@@ -81,6 +81,21 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 		},
 	}};
 
+	objects["abductee.chicken2"] = g::game::object{ &assets, "abductee.chicken2.yaml", {
+		{
+			"traits",
+			{
+				{ "speed", 1.f },
+			}
+		},
+		{
+			"sprites",
+			{
+				{ "sprite", "abductee.chicken2.pixelated.json" }
+			}
+		},
+	} };
+
 	objects["abductee.farmer"] = g::game::object{&assets, "abductee.farmer.yaml", {
 		{ 
 			"traits", 

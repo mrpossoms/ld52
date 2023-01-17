@@ -60,14 +60,6 @@ void game::Renderer::draw_props(const game::State& state, g::game::camera& cam)
 				.set_camera(camera)
 				.draw<GL_TRIANGLE_FAN>();
 			}
-			else
-			{
-				// g::gfx::debug::print{cam}.color({0, 0, 1, 1}).ray(p, {0.f, 1.f, 0.f});	
-			}
-		}
-		else
-		{
-			// g::gfx::debug::print{cam}.color({1, 0, 0, 1}).ray(p, {0.f, 1.f, 0.f});
 		}
 	}
 }
@@ -120,7 +112,7 @@ void game::Renderer::draw(game::State& state, float dt)
     		continue;
     	}
 
-		auto model = mat4::translation(a.position) * mat4::scale({ a.velocity[0] > 0 ? 1.f : -1.f, 1.f, 1.f});
+		auto model = mat4::translation(a.position) * mat4::rotation({0, 0, 1}, a.angle) * mat4::scale({ a.velocity[0] > 0 ? 1.f : -1.f, 1.f, 1.f});
 		
 
 		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
@@ -160,10 +152,35 @@ void game::Renderer::draw(game::State& state, float dt)
 		auto model = mat4::translation(state.player.position) * mat4::rotation({0, 0, 1}, state.player.roll);
 		auto& player_settings = tweaker->objects["player"];
 
+		player_sprite.update(std::min(5.f, state.player.velocity.magnitude() + state.player.thrust) * dt, 0);
+
 		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
 		["u_model"].mat4(model)
 		.set_sprite(player_sprite)
 		.set_camera(camera)
 		.draw<GL_TRIANGLE_FAN>();
 	}
+
+	{ // UI
+		glDisable(GL_DEPTH_TEST);
+		const vec<4> red = {1, 0, 0, 1};
+		const vec<4> green = {0, 1, 0, 1};
+
+		auto p = state.player.energy / 100.f;
+		auto color = green * p + red * (1.f - p);
+
+		for (int i = 0; i < 3; i++)
+		{
+			constexpr auto space = 0.025f;
+			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { 1.f, 0, 0 });
+			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { -1.f, 0, 0 });
+
+			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { state.player.energy / 100.f, 0, 0 });
+			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { -state.player.energy / 100.f, 0, 0 });			
+		}
+
+		glEnable(GL_DEPTH_TEST);
+	}
+
+
 }

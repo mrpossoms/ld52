@@ -14,25 +14,6 @@ static float random_norm()
 }
 
 
-struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
-{
-	float roll = 0;
-	float hoovering = 0;
-
-    std::vector<ray>& rays() override
-    {
-    	ray_list.clear();
-    	ray_list.push_back({position - vec<3>{0, 0.25, 0}, velocity});
-    	return ray_list;
-    }
-
-
-	vec<3> up()
-	{
-		return { sinf(roll), cosf(roll), 0 };
-	}
-};
-
 struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 {
 	enum Type
@@ -40,11 +21,15 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 		dog = 0,
 		cow,
 		chicken,
+		chicken2,
 		farmer,
+		COUNT
 	};
 
 	unsigned type;
 	g::gfx::sprite::instance sprite;
+	float angle = 0;
+	float ang_vel = 0;
 
 	struct {
 		float speed;
@@ -63,6 +48,7 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     		{0, 0.125, 0},
     		{0, 0.25, 0},
     		{0, 0.0625, 0},
+    		{0, 0.0625, 0},
     		{0, 0.25, 0}
     	};
 
@@ -77,11 +63,39 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     		"abductee.dog",
     		"abductee.cow",
     		"abductee.chicken",
+			"abductee.chicken2",
     		"abductee.farmer",
     	};
 
     	return names[(unsigned)type];
     }
+};
+
+struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
+{
+	float roll = 0;
+	float hoovering = 0;
+	float energy = 100;
+	float thrust = 0;
+	unsigned abductee_counts[Abductee::Type::COUNT] = {};
+
+	void reset()
+	{
+		energy = 100;
+		memset(abductee_counts, 0, sizeof(abductee_counts));
+	}
+
+    std::vector<ray>& rays() override
+    {
+    	ray_list.clear();
+    	ray_list.push_back({position - vec<3>{0, 0.25, 0}, velocity});
+    	return ray_list;
+    }
+
+	vec<3> up()
+	{
+		return { sinf(roll), cosf(roll), 0 };
+	}
 };
 
 struct Prop
