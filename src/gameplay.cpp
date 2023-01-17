@@ -9,22 +9,27 @@ static void update_player(game::State& state, float dt)
 	auto thrust = std::get<float>(player_settings.traits()["thrust"]);
 	const auto tractor_base = std::get<float>(player_settings.traits()["tractor"]);
 
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		game::gameplay::reset(state);
+	}
+
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS && player.energy > 0)
 	{
 		player.roll -= roll_speed * dt;
-		player.rolled = true;
+		player.rolled = player.thrusted;
 	}
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS && player.energy > 0)
 	{
 		player.roll += roll_speed * dt;
-		player.rolled = true;
+		player.rolled = player.thrusted;
 	}
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS && player.energy > 0)
 	{
 		player.velocity += player.up() * thrust * dt;
-		player.energy -= thrust * dt;
+		player.energy -= thrust * player.weight() * dt;
 		player.thrust = thrust;
 		player.thrusted = true;
 	}
@@ -62,7 +67,7 @@ static void update_player(game::State& state, float dt)
 		}
 
 		player.energy -= player.hoovering * dt;
-		player.hoovered = true;
+		player.hoovered = player.rolled;
 	}
 	else
 	{
@@ -100,6 +105,8 @@ static void update_dynamics(game::State& state, float dt)
 		if (intersections.size() > 0)
 		{
 			state.player.energy = 0;
+			state.player.roll = 0;
+			state.player.sprite.track("crash");
 		}
 
 		// abductees
@@ -129,7 +136,7 @@ static void update_dynamics(game::State& state, float dt)
 			if ((a.position - state.player.position).magnitude() < 1 && state.player.hoovering > 0)
 			{
 				state.player.abductee_counts[(unsigned)a.type] += 1;
-				
+
 				a = state.abductees[state.abductees.size() - 1];
 				state.abductees.pop_back();
 			}
@@ -221,6 +228,17 @@ void update_world(game::State& state)
 			}
 		}
 	}
+}
+
+void game::gameplay::reset(game::State& state)
+{
+	state.world.spawns.clear();
+	state.abductees.clear();
+	state.time = 0;
+
+	state.player.position[1] = 4;
+	state.player.position[2] = 0.1f;
+	state.player.reset();
 }
 
 float game::gameplay::surface_at_x(const game::State& state, float x)

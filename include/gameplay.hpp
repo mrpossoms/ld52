@@ -10,6 +10,8 @@ namespace game
 namespace gameplay
 {
 
+void reset(game::State& state);
+
 void update(game::State& state, float dt);
 
 float surface_at_x(const game::State& state, float x);

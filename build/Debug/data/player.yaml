@@ -1,7 +1,7 @@
 traits:
   hp: 99
+  tractor: 10
   roll_speed: 1.5
   thrust: 3
-  tractor: 10
 textures:
   sprite: ufo.png

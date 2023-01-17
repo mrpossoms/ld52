@@ -11,8 +11,6 @@ game::Renderer::Renderer(g::asset::store& assets, game::State& state) : assets(a
 
 	camera.position = { 0, 0, 5 };
 	camera.orientation = xmath::quat<>{};
-
-	player_sprite = assets.sprite("ufo.json").make_instance();
 }
 
 void game::Renderer::draw_props(const game::State& state, g::game::camera& cam)
@@ -117,11 +115,11 @@ void game::Renderer::draw(game::State& state, float dt)
 
 	}
 
-	{ // terrain
+	{ // terrain (background)
 		glDisable(GL_DEPTH_TEST);
 		auto& world_settings = tweaker->objects["world"];
 
-		auto model = mat4::translation(vec<3>{state.player.position[0], state.player.position[1], -5}) * mat4::scale({ 100, 100, 100 });
+		auto model = mat4::translation(vec<3>{camera.position[0], camera.position[1], -5}) * mat4::scale({ 100, 100, 100 });
 		plane.using_shader(assets.shader("terrain-post.vs+terrain-post.fs"))
 			["u_model"].mat4(model)
 			["u_under_ground"].texture(world_settings.texture("ground"))
@@ -168,7 +166,7 @@ void game::Renderer::draw(game::State& state, float dt)
 	{ // terrain
 		auto& world_settings = tweaker->objects["world"];
 
-		auto model = mat4::translation(state.player.position * vec<3>{1.f, 1.f, 0.f}) * mat4::scale({10, 10, 10});
+		auto model = mat4::translation(camera.position * vec<3>{1.f, 1.f, 0.f}) * mat4::scale({10, 10, 10});
 		plane.using_shader(assets.shader("terrain-post.vs+terrain-post.fs"))
 		["u_model"].mat4(model)
 		["u_under_ground"].texture(world_settings.texture("underground"))
@@ -184,11 +182,11 @@ void game::Renderer::draw(game::State& state, float dt)
 		auto model = mat4::translation(state.player.position) * mat4::rotation({0, 0, 1}, state.player.roll);
 		auto& player_settings = tweaker->objects["player"];
 
-		player_sprite.update(std::min(5.f, state.player.velocity.magnitude() + state.player.thrust) * dt, 0);
+		state.player.sprite.update(std::min(5.f, state.player.velocity.magnitude() + state.player.thrust) * dt, 0);
 
 		plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
 		["u_model"].mat4(model)
-		.set_sprite(player_sprite)
+		.set_sprite(state.player.sprite)
 		.set_camera(camera)
 		.draw<GL_TRIANGLE_FAN>();
 	}
@@ -201,58 +199,55 @@ void game::Renderer::draw(game::State& state, float dt)
 		auto p = state.player.energy / 100.f;
 		auto color = green * p + red * (1.f - p);
 
-
+		auto half = Abductee::Type::COUNT / 2.f;
+		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
 		{
-			auto half = Abductee::Type::COUNT / 2.f;
-			for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
-			{
-				auto p = state.player.position + vec<3>{i - half, 3.0f, 0.f};
-				std::string str = std::to_string(state.player.abductee_counts[i]) + "/" + std::to_string(state.player.abductee_targets[i]);
-			    auto s = 0.005f;
+			auto p = camera.position + vec<3>{i - half, 3.0f, -camera.position[2]};
+			std::string str = std::to_string(state.player.abductee_counts[i]) + "/" + std::to_string(state.player.abductee_targets[i]);
+		    auto s = 0.005f;
 
-			    vec<2> dims, offset;
-			    text.measure(str, dims, offset);
-			    offset = (dims * -0.5) * s;// - offset * 0.5;
-			    auto text_model = mat4::translation(p + vec<3>{offset[0], offset[1], 0}) * mat4::scale({-s, s, 1.0f});
+		    vec<2> dims, offset;
+		    text.measure(str, dims, offset);
+		    offset = (dims * -0.5) * s;// - offset * 0.5;
+		    auto text_model = mat4::translation(p + vec<3>{offset[0], offset[1], 0}) * mat4::scale({-s, s, 1.0f});
 
-			    text.using_shader(assets.shader("basic_gui.vs+basic_font.fs"), str, [&](g::gfx::shader::usage& usage) {
-			    	vec<4> color = {1, 1, 1, 1};
-			    	if (state.player.abductee_counts[i] > state.player.abductee_targets[i])
-			    	{
-			    		color = {1, 0, 0, 1};
-			    	}
-			    	else if (state.player.abductee_counts[i] == state.player.abductee_targets[i])
-			    	{
-			    		color = {0, 1, 0, 1};
-			    	}
+		    text.using_shader(assets.shader("basic_gui.vs+basic_font.fs"), str, [&](g::gfx::shader::usage& usage) {
+		    	vec<4> color = {1, 1, 1, 1};
+		    	if (state.player.abductee_counts[i] > state.player.abductee_targets[i])
+		    	{
+		    		color = {1, 0, 0, 1};
+		    	}
+		    	else if (state.player.abductee_counts[i] == state.player.abductee_targets[i])
+		    	{
+		    		color = {0, 1, 0, 1};
+		    	}
 
-					usage.set_camera(camera)
-		              ["u_model"].mat4(mat<4, 4>::translation({ 0, 0.5, 0 }) * text_model)
-		              ["u_font_color"].vec4(color)
-		              ["u_texture"].texture(text.font.face);
-				}).draw<GL_TRIANGLES>();
+				usage.set_camera(camera)
+	              ["u_model"].mat4(mat<4, 4>::translation({ 0, 0.5, 0 }) * text_model)
+	              ["u_font_color"].vec4(color)
+	              ["u_texture"].texture(text.font.face);
+			}).draw<GL_TRIANGLES>();
 
-				auto icon_model = mat4::translation(p);
+			auto icon_model = mat4::translation(p);
 
-				auto& abductee_settings = state.tweaker->objects[game::Abductee::obj_name_for_type((Abductee::Type)i)];
-				auto sprite = abductee_settings.sprite("sprite").make_instance();
+			auto& abductee_settings = state.tweaker->objects[game::Abductee::obj_name_for_type((Abductee::Type)i)];
+			auto sprite = abductee_settings.sprite("sprite").make_instance();
 
-				plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
-				["u_model"].mat4(icon_model)
-				.set_sprite(sprite)
-				.set_camera(camera)
-				.draw<GL_TRIANGLE_FAN>();				
-			}
+			plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
+			["u_model"].mat4(icon_model)
+			.set_sprite(sprite)
+			.set_camera(camera)
+			.draw<GL_TRIANGLE_FAN>();				
 		}
 
 		for (int i = 0; i < 3; i++)
 		{
 			constexpr auto space = 0.025f;
-			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { 1.f, 0, 0 });
-			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { -1.f, 0, 0 });
+			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(camera.position + vec<3>{0, 2 + i * space, -camera.position[2]}, { 1.f, 0, 0 });
+			g::gfx::debug::print{ camera }.color({ 0.25, 0.25, 0.25, 1 }).ray(camera.position + vec<3>{0, 2 + i * space, -camera.position[2]}, { -1.f, 0, 0 });
 
-			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { state.player.energy / 100.f, 0, 0 });
-			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { -state.player.energy / 100.f, 0, 0 });			
+			g::gfx::debug::print{ camera }.color(color).ray(camera.position + vec<3>{0, 2 + i * space, -camera.position[2]}, { state.player.energy / 100.f, 0, 0 });
+			g::gfx::debug::print{ camera }.color(color).ray(camera.position + vec<3>{0, 2 + i * space, -camera.position[2]}, { -state.player.energy / 100.f, 0, 0 });			
 		}
 		glEnable(GL_DEPTH_TEST);
 

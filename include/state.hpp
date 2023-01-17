@@ -90,15 +90,31 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 	unsigned abductee_counts[Abductee::Type::COUNT] = {};
 	unsigned abductee_targets[Abductee::Type::COUNT] = {};
 
+	g::gfx::sprite::instance sprite;
+
+	float weight()
+	{
+		float w = 0;
+		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
+		{
+			w += abductee_counts[i] * 0.125f;
+		}
+
+		return w;
+	}
+
 	void reset()
 	{
 		energy = 100;
 		memset(abductee_counts, 0, sizeof(abductee_counts));
+		velocity *= 0;
 
 		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
 		{
 			abductee_targets[i] = ::rand() % 10;
 		}
+
+		sprite.track("default");
 	}
 
     std::vector<ray>& rays() override

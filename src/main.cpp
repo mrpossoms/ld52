@@ -17,6 +17,8 @@ struct ld52 : public g::core
 
 	virtual bool initialize()
 	{
+		::srand(time(NULL));
+
 		state.tweaker = std::make_shared<game::Tweaker>(assets);
 		renderer = std::make_shared<game::Renderer>(assets, state);
 
@@ -26,9 +28,9 @@ struct ld52 : public g::core
 			return d;
 		};
 
-		state.player.position[1] = 4;
-		state.player.position[2] = 0.1f;
-		state.player.reset();
+		state.player.sprite = assets.sprite("ufo.json").make_instance();
+
+		game::gameplay::reset(state);
 
 		// for (unsigned i = 1; i--;)
 		// {
