@@ -16,6 +16,7 @@
   "size": { "w": 20, "h": 24 },
   "scale": "1",
   "frameTags": [
+   { "name": "default", "from": 0, "to": 0, "direction": "forward" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }

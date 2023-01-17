@@ -135,7 +135,14 @@ static void update_dynamics(game::State& state, float dt)
 			// Despawn when they are close to the ship
 			if ((a.position - state.player.position).magnitude() < 1 && state.player.hoovering > 0)
 			{
-				state.player.abductee_counts[(unsigned)a.type] += 1;
+				if (a.type == game::Abductee::Type::fuel)
+				{
+					state.player.energy = std::min(100.f, state.player.energy + 25);
+				}
+				else
+				{
+					state.player.abductee_counts[(unsigned)a.type] += 1;
+				}
 
 				a = state.abductees[state.abductees.size() - 1];
 				state.abductees.pop_back();
@@ -153,16 +160,19 @@ static void update_dynamics(game::State& state, float dt)
 
 	    	a.move.count_down -= dt;
 	    
-	    	if ((a.position - state.player.position).magnitude() < 4)
-	    	{
-	    		a.move.count_down = 1;
-	    		a.move.speed = std::clamp(a.position[0] - state.player.position[0], -1.f, 1.f) * 20.f;
-	    	}
+			if (a.type != game::Abductee::Type::fuel)
+			{
+				if ((a.position - state.player.position).magnitude() < 4)
+				{
+					a.move.count_down = 1;
+					a.move.speed = std::clamp(a.position[0] - state.player.position[0], -1.f, 1.f) * 20.f;
+				}
 
-	    	if (a.move.count_down <= 0)
-	    	{
-	    		a.move.next();
-	    	}
+				if (a.move.count_down <= 0)
+				{
+					a.move.next();
+				}
+			}
 		}
 	}
 
@@ -208,6 +218,20 @@ void update_world(game::State& state)
 				if(!state.world.spawns.contains(_x))
 				{
 					auto num = ::rand() % 4;
+					auto sprite_idx = std::clamp(static_cast<int>(4.f * (sin(_x) * 0.5f + 0.5f)), 0, 3);
+
+					if (sprite_idx == 0 && ::rand() % 2 == 0)
+					{
+						state.abductees.push_back({});
+						auto& a = state.abductees.back();
+						a.type = game::Abductee::Type::fuel;
+			    	
+						a.position[0] = ((::rand() % 1024 / 512.f) - 1.f) + _x;
+						a.position[1] = ys[x] + 0.25f;
+						
+						auto& abductee_settings = state.tweaker->objects[a.obj_name()];
+						a.sprite = abductee_settings.sprite("sprite").make_instance();
+					}
 
 					for (;num--;)
 					{

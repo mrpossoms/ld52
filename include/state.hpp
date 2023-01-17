@@ -23,7 +23,8 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
 		chicken,
 		chicken2,
 		farmer,
-		COUNT
+		COUNT,
+		fuel,
 	};
 
 	unsigned type;
@@ -49,7 +50,9 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     		{0, 0.25, 0},
     		{0, 0.0625, 0},
     		{0, 0.0625, 0},
-    		{0, 0.25, 0}
+    		{0, 0.25, 0},
+    		{},
+    		{0, 0.125, 0},
     	};
 
     	ray_list.clear();
@@ -65,6 +68,8 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     		"abductee.chicken",
 			"abductee.chicken2",
     		"abductee.farmer",
+    		"",
+    		"abductee.fuel"
     	};
 
     	return names[(unsigned)t];

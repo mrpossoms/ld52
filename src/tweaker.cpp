@@ -110,4 +110,19 @@ game::Tweaker::Tweaker(g::asset::store& assets)
 			}
 		},
 	}};
+
+	objects["abductee.fuel"] = g::game::object{&assets, "abductee.fuel.yaml", {
+		{ 
+			"traits", 
+			{
+				{ "speed", 0.f },
+			}
+		},
+		{ 
+			"sprites", 
+			{
+				{ "sprite", "fuel.json" }
+			}
+		},
+	}};
 }
