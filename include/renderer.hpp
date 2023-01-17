@@ -25,6 +25,8 @@ private:
 	g::gfx::mesh<g::gfx::vertex::pos_uv_norm> plane;
 
 	g::gfx::sprite::instance player_sprite;
+
+	g::gfx::primative::text text;
 };
 
 }

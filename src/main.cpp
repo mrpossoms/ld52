@@ -28,6 +28,7 @@ struct ld52 : public g::core
 
 		state.player.position[1] = 4;
 		state.player.position[2] = 0.1f;
+		state.player.reset();
 
 		// for (unsigned i = 1; i--;)
 		// {

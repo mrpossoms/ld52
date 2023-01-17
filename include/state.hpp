@@ -57,7 +57,7 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     	return ray_list;
     }
 
-    const std::string& obj_name() const
+    static const std::string& obj_name_for_type(unsigned t)
     {
     	const static std::string names[] = {
     		"abductee.dog",
@@ -67,7 +67,12 @@ struct Abductee : public g::dyn::particle, g::dyn::cd::ray_collider
     		"abductee.farmer",
     	};
 
-    	return names[(unsigned)type];
+    	return names[(unsigned)t];
+    }
+
+    const std::string& obj_name() const
+    {
+    	return Abductee::obj_name_for_type(type);
     }
 };
 
@@ -77,12 +82,23 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 	float hoovering = 0;
 	float energy = 100;
 	float thrust = 0;
+
+	bool thrusted = false;
+	bool rolled = false;
+	bool hoovered = false;
+
 	unsigned abductee_counts[Abductee::Type::COUNT] = {};
+	unsigned abductee_targets[Abductee::Type::COUNT] = {};
 
 	void reset()
 	{
 		energy = 100;
 		memset(abductee_counts, 0, sizeof(abductee_counts));
+
+		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
+		{
+			abductee_targets[i] = ::rand() % 10;
+		}
 	}
 
     std::vector<ray>& rays() override

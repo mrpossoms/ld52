@@ -3,7 +3,7 @@
 
 using mat4 = xmath::mat<4,4>;
 
-game::Renderer::Renderer(g::asset::store& assets, game::State& state) : assets(assets)
+game::Renderer::Renderer(g::asset::store& assets, game::State& state) : assets(assets), text(assets.font("UbuntuMono-B.ttf"))
 {
 	this->tweaker = state.tweaker;
 
@@ -84,6 +84,38 @@ void game::Renderer::draw(game::State& state, float dt)
 	.set_camera(camera)
 	.draw<GL_TRIANGLE_FAN>();
 	glEnable(GL_DEPTH_TEST);
+
+	{ // title
+
+        
+		std::string str = "";
+
+		if (!state.player.thrusted)
+		{
+			str = "Up arrow key to fire engine";
+		}
+		else if (!state.player.rolled)
+		{
+			str = "Left/right arrow key to roll";
+		}
+		else if (!state.player.hoovered)
+		{
+			str = "Space key to abduct";
+		}
+        
+        vec<2> dims, offset;
+        text.measure(str, dims, offset);
+        offset = (dims * -0.5);// - offset * 0.5;
+
+        auto s = 0.05f;
+        auto model = mat4::translation({offset[0] * s, offset[1] * s, -10}) * mat4::scale({-s, s, 1.0f});
+
+        text.draw(assets.shader("basic_gui.vs+basic_font.fs"), str, camera, model);
+        // debug::print{&cam}.color({0, 1, 0, 1}).model(model).ray(vec<2>{}, dims);
+        // debug::print{&cam}.color({0, 1, 0, 1}).model(model).point(offset + dims);
+        // 
+
+	}
 
 	{ // terrain
 		glDisable(GL_DEPTH_TEST);
@@ -169,6 +201,50 @@ void game::Renderer::draw(game::State& state, float dt)
 		auto p = state.player.energy / 100.f;
 		auto color = green * p + red * (1.f - p);
 
+
+		{
+			auto half = Abductee::Type::COUNT / 2.f;
+			for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
+			{
+				auto p = state.player.position + vec<3>{i - half, 3.0f, 0.f};
+				std::string str = std::to_string(state.player.abductee_counts[i]) + "/" + std::to_string(state.player.abductee_targets[i]);
+			    auto s = 0.005f;
+
+			    vec<2> dims, offset;
+			    text.measure(str, dims, offset);
+			    offset = (dims * -0.5) * s;// - offset * 0.5;
+			    auto text_model = mat4::translation(p + vec<3>{offset[0], offset[1], 0}) * mat4::scale({-s, s, 1.0f});
+
+			    text.using_shader(assets.shader("basic_gui.vs+basic_font.fs"), str, [&](g::gfx::shader::usage& usage) {
+			    	vec<4> color = {1, 1, 1, 1};
+			    	if (state.player.abductee_counts[i] > state.player.abductee_targets[i])
+			    	{
+			    		color = {1, 0, 0, 1};
+			    	}
+			    	else if (state.player.abductee_counts[i] == state.player.abductee_targets[i])
+			    	{
+			    		color = {0, 1, 0, 1};
+			    	}
+
+					usage.set_camera(camera)
+		              ["u_model"].mat4(mat<4, 4>::translation({ 0, 0.5, 0 }) * text_model)
+		              ["u_font_color"].vec4(color)
+		              ["u_texture"].texture(text.font.face);
+				}).draw<GL_TRIANGLES>();
+
+				auto icon_model = mat4::translation(p);
+
+				auto& abductee_settings = state.tweaker->objects[game::Abductee::obj_name_for_type((Abductee::Type)i)];
+				auto sprite = abductee_settings.sprite("sprite").make_instance();
+
+				plane.using_shader(assets.shader("spritesheet.vs+spritesheet.fs"))
+				["u_model"].mat4(icon_model)
+				.set_sprite(sprite)
+				.set_camera(camera)
+				.draw<GL_TRIANGLE_FAN>();				
+			}
+		}
+
 		for (int i = 0; i < 3; i++)
 		{
 			constexpr auto space = 0.025f;
@@ -178,8 +254,9 @@ void game::Renderer::draw(game::State& state, float dt)
 			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { state.player.energy / 100.f, 0, 0 });
 			g::gfx::debug::print{ camera }.color(color).ray(state.player.position + vec<3>{0, 2 + i * space, 0}, { -state.player.energy / 100.f, 0, 0 });			
 		}
-
 		glEnable(GL_DEPTH_TEST);
+
+		
 	}
 
 

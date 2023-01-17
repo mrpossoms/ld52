@@ -9,18 +9,38 @@ static void update_player(game::State& state, float dt)
 	auto thrust = std::get<float>(player_settings.traits()["thrust"]);
 	const auto tractor_base = std::get<float>(player_settings.traits()["tractor"]);
 
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS && player.energy > 0) player.roll -= roll_speed * dt;
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS && player.energy > 0) player.roll += roll_speed * dt;
-	
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS && player.energy > 0)
+	{
+		player.roll -= roll_speed * dt;
+		player.rolled = true;
+	}
+
+	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS && player.energy > 0)
+	{
+		player.roll += roll_speed * dt;
+		player.rolled = true;
+	}
+
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS && player.energy > 0)
 	{
 		player.velocity += player.up() * thrust * dt;
 		player.energy -= thrust * dt;
 		player.thrust = thrust;
+		player.thrusted = true;
 	}
 	else
 	{
 		player.thrust = 0;
+	}
+
+	if (!player.thrusted)
+	{
+		float error = 2 - player.position[1];
+		if (error < 0) { error = 0; }
+
+		player.velocity += player.up() * (error * 2.f) * dt;
+		player.velocity *= 0.99f;
+		player.thrust = 1;
 	}
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_SPACE) == GLFW_PRESS && player.energy > 0)
@@ -42,6 +62,7 @@ static void update_player(game::State& state, float dt)
 		}
 
 		player.energy -= player.hoovering * dt;
+		player.hoovered = true;
 	}
 	else
 	{
@@ -107,10 +128,10 @@ static void update_dynamics(game::State& state, float dt)
 			// Despawn when they are close to the ship
 			if ((a.position - state.player.position).magnitude() < 1 && state.player.hoovering > 0)
 			{
+				state.player.abductee_counts[(unsigned)a.type] += 1;
+				
 				a = state.abductees[state.abductees.size() - 1];
 				state.abductees.pop_back();
-			
-				state.player.abductee_counts[(unsigned)a.type] += 1;
 			}
 
 			a.sprite.update(dt, 0);
