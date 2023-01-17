@@ -29,9 +29,8 @@ struct ld52 : public g::core
 		};
 
 		state.player.sprite = assets.sprite("ufo.json").make_instance();
-
 		game::gameplay::reset(state);
-
+		state.player.target_alt = 2;
 		// for (unsigned i = 1; i--;)
 		// {
 		// 	state.abductees.push_back({});

@@ -88,6 +88,8 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 	float energy = 100;
 	float thrust = 0;
 
+	float target_alt = NAN;
+
 	bool thrusted = false;
 	bool rolled = false;
 	bool hoovered = false;
@@ -96,6 +98,16 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 	unsigned abductee_targets[Abductee::Type::COUNT] = {};
 
 	g::gfx::sprite::instance sprite;
+
+	bool done()
+	{
+		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
+		{
+			if (abductee_counts[i] < abductee_targets[i]) { return false; }
+		}
+
+		return true;
+	}
 
 	float weight()
 	{
@@ -113,10 +125,11 @@ struct Player : public g::dyn::particle, g::dyn::cd::ray_collider
 		energy = 100;
 		memset(abductee_counts, 0, sizeof(abductee_counts));
 		velocity *= 0;
+		target_alt = NAN;
 
 		for (unsigned i = 0; i < Abductee::Type::COUNT; i++)
 		{
-			abductee_targets[i] = ::rand() % 10;
+			abductee_targets[i] = ::rand() % 5;
 		}
 
 		sprite.track("default");

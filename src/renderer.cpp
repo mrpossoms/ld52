@@ -66,12 +66,15 @@ void game::Renderer::draw(game::State& state, float dt)
 {
 	glDisable(GL_CULL_FACE);
 
-	auto error = state.player.position - camera.position;
-	error[2] = 0;
-	camera_velocity += error * 0.01f * dt;
-
-	camera.position[0] = state.player.position[0]; //+= error * 0.1f + camera_velocity * dt;
-	camera.position[1] = state.player.position[1];
+	if (!state.player.done())
+	{
+		auto error = state.player.position - camera.position;
+		error[2] = 0;
+		camera_velocity += error * 0.01f * dt;
+		
+		camera.position[0] = state.player.position[0]; //+= error * 0.1f + camera_velocity * dt;
+		camera.position[1] = state.player.position[1];	
+	}
 
 	camera.aspect_ratio(g::gfx::aspect());
 	// camera.look_at(state.player.position);

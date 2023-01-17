@@ -14,38 +14,51 @@ static void update_player(game::State& state, float dt)
 		game::gameplay::reset(state);
 	}
 
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS && player.energy > 0)
+	auto done = player.done();
+
+	if (player.energy > 0 && !done)
 	{
-		player.roll -= roll_speed * dt;
-		player.rolled = player.thrusted;
+		if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_LEFT) == GLFW_PRESS)
+		{
+			player.roll -= roll_speed * dt;
+			player.rolled = player.thrusted;
+		}
+
+		if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		{
+			player.roll += roll_speed * dt;
+			player.rolled = player.thrusted;
+		}
+
+		if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			player.velocity += player.up() * thrust * dt;
+			player.energy -= thrust * player.weight() * dt;
+			player.thrust = thrust;
+			player.thrusted = true;
+			player.target_alt = NAN;
+		}
+		else
+		{
+			player.thrust = 0;
+		}		
 	}
 
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_RIGHT) == GLFW_PRESS && player.energy > 0)
+	if (done)
 	{
-		player.roll += roll_speed * dt;
-		player.rolled = player.thrusted;
+		player.target_alt = 10;
+		player.roll = 0;
 	}
 
-	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_UP) == GLFW_PRESS && player.energy > 0)
+	if (isfinite(player.target_alt))
 	{
-		player.velocity += player.up() * thrust * dt;
-		player.energy -= thrust * player.weight() * dt;
-		player.thrust = thrust;
-		player.thrusted = true;
-	}
-	else
-	{
-		player.thrust = 0;
-	}
-
-	if (!player.thrusted)
-	{
-		float error = 2 - player.position[1];
+		float error = player.target_alt - player.position[1];
 		if (error < 0) { error = 0; }
 
-		player.velocity += player.up() * (error * 2.f) * dt;
+		player.velocity += player.up() * (error * 1.f) * dt;
 		player.velocity *= 0.99f;
 		player.thrust = 1;
+		player.hoovering = 0;
 	}
 
 	if (glfwGetKey(g::gfx::GLFW_WIN, GLFW_KEY_SPACE) == GLFW_PRESS && player.energy > 0)
