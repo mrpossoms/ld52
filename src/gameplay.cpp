@@ -46,7 +46,7 @@ static void update_player(game::State& state, float dt)
 
 	if (done)
 	{
-		player.target_alt = 10;
+		player.target_alt = 5;
 		player.roll = 0;
 	}
 
