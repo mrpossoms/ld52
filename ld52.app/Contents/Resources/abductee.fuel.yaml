@@ -1,0 +1,4 @@
+traits:
+  speed: 0
+sprites:
+  sprite: fuel.json
