@@ -1,8 +1,6 @@
 varying vec2 v_uv;
 varying vec3 v_cam_pos;
 
-varying vec4 color;
-
 uniform mat4 u_view;
 uniform mat4 u_proj;
 
@@ -25,10 +23,10 @@ void main (void)
 	{
 		float a = 1.0 / (dist * 10.0);
 		a *= 1.0 - angle / u_beam_angle;
-		color = mix(vec4(0.5, 1.0, 0.5, 1.0), vec4(0.0, 1.0, 0.0, 1.0), angle / u_beam_angle);
+		vec4 color = mix(vec4(0.5, 1.0, 0.5, 1.0), vec4(0.0, 1.0, 0.0, 1.0), angle / u_beam_angle);
 		color.a = a * ((0.5 * cos(u_time * 40) + 0.5) * 0.25 + 0.75);
-
 		color *= u_power;
+		gl_FragColor = color;
 	}
 	else
 	{
