@@ -1,7 +1,6 @@
 varying vec2 v_uv;
 varying vec3 v_cam_pos;
 
-varying vec4 color;
 
 uniform mat4 u_view;
 
@@ -23,5 +22,5 @@ void main (void)
 		sky_color = mix(sky_color, black, w);
 	}
 
-	color = vec4(sky_color, 1.0);
+	gl_FragColor = vec4(sky_color, 1.0);
 }

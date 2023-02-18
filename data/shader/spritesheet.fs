@@ -5,7 +5,6 @@ uniform vec2 u_sprite_sheet_size;
 uniform vec2 u_sprite_sheet_frame_pos;
 uniform vec2 u_sprite_sheet_frame_size;
 
-varying vec4 color;
 
 void main (void)
 {
@@ -13,5 +12,5 @@ void main (void)
 	vec2 dims = u_sprite_sheet_frame_size / u_sprite_sheet_size;
 	vec2 uv = off + v_uv * dims;
 
-	color = texture(u_sprite_sheet, uv);
+	gl_FragColor = texture(u_sprite_sheet, uv);
 }
