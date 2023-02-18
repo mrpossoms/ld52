@@ -82,6 +82,7 @@ int main (int argc, const char* argv[])
 	opts.gfx.fullscreen = false;
 	opts.gfx.width = 1024;
 	opts.gfx.height = 768;
+	opts.gfx.api_version = { 2, 1 };
 
 #ifdef __EMSCRIPTEN__
 	auto monitor = glfwGetPrimaryMonitor();

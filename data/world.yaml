@@ -1,5 +1,5 @@
+textures:
+  ground: world.ground.pixelated.repeating.png
+  underground: world.underground.pixelated.repeating.png
 traits:
   gravity: -1
-textures:
-  underground: world.underground.pixelated.repeating.png
-  ground: world.ground.pixelated.repeating.png
