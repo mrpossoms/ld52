@@ -2,19 +2,19 @@
 precision mediump float;
 #endif
 
-in vec3 a_position;
-in vec3 a_normal;
-in vec3 a_tangent;
+varying vec3 a_position;
+varying vec3 a_normal;
+varying vec3 a_tangent;
 
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_proj;
 
-out vec3 v_normal;
-out vec3 v_tangent;
-out vec3 v_up;
-out vec4 v_world_pos;
-out mat3 v_basis;
+varying vec3 v_normal;
+varying vec3 v_tangent;
+varying vec3 v_up;
+varying vec4 v_world_pos;
+varying mat3 v_basis;
 
 void main (void)
 {

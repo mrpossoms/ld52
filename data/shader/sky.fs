@@ -1,7 +1,7 @@
-in vec2 v_uv;
-in vec3 v_cam_pos;
+varying vec2 v_uv;
+varying vec3 v_cam_pos;
 
-out vec4 color;
+varying vec4 color;
 
 uniform mat4 u_view;
 

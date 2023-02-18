@@ -1,8 +1,8 @@
-in vec3 a_position;
-in vec2 a_uv;
-in vec3 a_normal;
+varying vec3 a_position;
+varying vec2 a_uv;
+varying vec3 a_normal;
 
-out vec2 v_uv;
+varying vec2 v_uv;
 
 void main (void)
 {

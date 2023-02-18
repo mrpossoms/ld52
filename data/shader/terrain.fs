@@ -2,13 +2,13 @@
 precision mediump float;
 #endif
 
-in vec4 v_world_pos;
-in vec3 v_normal;
-in vec3 v_tangent;
-in vec3 v_up;
-in mat3 v_basis;
+varying vec4 v_world_pos;
+varying vec3 v_normal;
+varying vec3 v_tangent;
+varying vec3 v_up;
+varying mat3 v_basis;
 
-out vec4 color;
+varying vec4 color;
 
 void main (void)
 {

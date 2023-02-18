@@ -1,11 +1,11 @@
-in vec2 v_uv;
+varying vec2 v_uv;
 
 uniform sampler2D u_sprite_sheet;
 uniform vec2 u_sprite_sheet_size;
 uniform vec2 u_sprite_sheet_frame_pos;
 uniform vec2 u_sprite_sheet_frame_size;
 
-out vec4 color;
+varying vec4 color;
 
 void main (void)
 {

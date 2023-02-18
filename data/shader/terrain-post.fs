@@ -1,7 +1,7 @@
 #define M_PI 3.14159
 
-in vec2 v_uv;
-in vec4 v_world;
+varying vec2 v_uv;
+varying vec4 v_world;
 
 out vec4 color;
 

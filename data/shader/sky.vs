@@ -1,11 +1,11 @@
-in vec3 a_position;
-in vec2 a_uv;
-in vec3 a_normal;
+varying vec3 a_position;
+varying vec2 a_uv;
+varying vec3 a_normal;
 
 uniform mat4 u_view;
 
-out vec2 v_uv;
-out vec3 v_cam_pos;
+varying vec2 v_uv;
+varying vec3 v_cam_pos;
 
 void main (void)
 {
