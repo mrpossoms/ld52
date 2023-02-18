@@ -2,9 +2,9 @@
 precision mediump float;
 #endif
 
-varying vec3 a_position;
-varying vec3 a_normal;
-varying vec3 a_tangent;
+attribute vec3 a_position;
+attribute vec3 a_normal;
+attribute vec3 a_tangent;
 
 uniform mat4 u_model;
 uniform mat4 u_view;

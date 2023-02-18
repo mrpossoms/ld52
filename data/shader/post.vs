@@ -1,6 +1,6 @@
-varying vec3 a_position;
-varying vec2 a_uv;
-varying vec3 a_normal;
+attribute vec3 a_position;
+attribute vec2 a_uv;
+attribute vec3 a_normal;
 
 varying vec2 v_uv;
 
