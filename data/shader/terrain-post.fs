@@ -17,7 +17,7 @@ void main (void)
 
 	vec2 uv = v_world.xy * 0.5;
 
-	vec4 color = mix(texture(u_above_ground, uv), texture(u_under_ground, uv), clamp(d, 0.0, 1.0));
+	vec4 color = mix(texture2D(u_above_ground, uv), texture2D(u_under_ground, uv), clamp(d, 0.0, 1.0));
 
 	vec4 blue = vec4(0.0, 0.749, 1.0, 1.0);
 

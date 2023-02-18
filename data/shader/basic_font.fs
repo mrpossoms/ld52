@@ -10,7 +10,7 @@ void main (void)
 {
     vec2 uv = v_uv;
 
-    float a = texture(u_texture, uv).a;
+    float a = texture2D(u_texture, uv).a;
     vec4 color = u_font_color;
     // color.rg = uv;
     color *= a;
